@@ -1,0 +1,9 @@
+1
+Perez; Juan
+99999
+pj@example.com
+CERTIFICADO
+Necesito certificado de alumno regular
+ALTA
+05/11/2026
+0
