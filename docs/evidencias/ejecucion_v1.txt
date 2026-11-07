@@ -1,0 +1,106 @@
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: Nombre del estudiante: Legajo: Email: Tipo (CERTIFICADO/EQUIVALENCIA/REINCORPORACION/OTRO): Descripcion: Prioridad (ALTA/MEDIA/BAJA): Fecha (dd/MM/yyyy): Solicitud registrada con id 1 (area: Alumnado)
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: Nombre del estudiante: Legajo: Email: Tipo (CERTIFICADO/EQUIVALENCIA/REINCORPORACION/OTRO): Descripcion: Prioridad (ALTA/MEDIA/BAJA): Fecha (dd/MM/yyyy): Solicitud registrada con id 2 (area: Academica)
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: Nombre del estudiante: Legajo: Email: Tipo (CERTIFICADO/EQUIVALENCIA/REINCORPORACION/OTRO): Descripcion: Prioridad (ALTA/MEDIA/BAJA): Fecha (dd/MM/yyyy): Error: email invalido
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: Id de la solicitud: Nombre del responsable: Solicitud 1 asignada a Ana Gomez
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: Id de la solicitud: Nuevo estado (PENDIENTE/EN_PROCESO/RESUELTA/CERRADA): Solicitud 1 ahora esta EN_PROCESO
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: Id de la solicitud: Nuevo estado (PENDIENTE/EN_PROCESO/RESUELTA/CERRADA): Error: no se puede pasar a EN_PROCESO sin responsable asignado
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: Id de la solicitud: Nuevo estado (PENDIENTE/EN_PROCESO/RESUELTA/CERRADA): Solicitud 1 ahora esta RESUELTA
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: 1. Por estado
+2. Por tipo
+3. Por legajo
+Opcion: Estado: #1 | Maria Lopez | CERTIFICADO | ALTA | RESUELTA | Ana Gomez
+Total encontradas: 1
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: ===== REPORTE DE SOLICITUDES =====
+Total: 2
+Pendientes: 1
+En proceso: 0
+Resueltas: 1
+Cerradas: 0
+--- Detalle ---
+#1 | Maria Lopez (12345) | CERTIFICADO | ALTA | RESUELTA | Ana Gomez | vence 08/11/2026 | urgente: NO
+#2 | Juan Perez (23456) | EQUIVALENCIA | MEDIA | PENDIENTE | sin asignar | vence 19/11/2026 | urgente: NO
+--- Carga de responsables ---
+Ana Gomez (Alumnado): 1 solicitudes activas
+Carlos Ruiz (Academica): 0 solicitudes activas
+Laura Pena (Mesa de Entradas): 0 solicitudes activas
+
+===== GESTION DE SOLICITUDES ACADEMICAS =====
+1. Registrar solicitud
+2. Cambiar estado
+3. Asignar responsable
+4. Buscar solicitudes
+5. Reporte
+0. Salir
+Opcion: Hasta luego

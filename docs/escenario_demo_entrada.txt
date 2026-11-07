@@ -1,0 +1,41 @@
+1
+Maria Lopez
+12345
+maria.lopez@example.com
+CERTIFICADO
+Necesito certificado de alumno regular
+ALTA
+03/11/2026
+1
+Juan Perez
+23456
+juan.perez@example.com
+EQUIVALENCIA
+Equivalencia de Programacion I por otra facultad
+MEDIA
+04/11/2026
+1
+Sofia Diaz
+34567
+sofia.diaz.example.com
+REINCORPORACION
+Solicito reincorporacion a la carrera
+ALTA
+05/11/2026
+3
+1
+Ana Gomez
+2
+1
+EN_PROCESO
+2
+2
+EN_PROCESO
+2
+1
+RESUELTA
+4
+1
+RESUELTA
+5
+0
