@@ -149,56 +149,17 @@ public class GestorSolicitudes {
 
 
     public static boolean cambiarEstado(int id, String nuevoEstado) {
-        Solicitud s = null;
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).id == id) {
-                s = lista.get(i);
-            }
-        }
+        Solicitud s = buscarSolicitud(id);
         if (s == null) {
             System.out.println("Error: no existe la solicitud " + id);
             return false;
         }
-        if (s.estado.equals("PENDIENTE")) {
-            if (nuevoEstado.equals("EN_PROCESO")) {
-                if (s.responsable == null) {
-                    System.out.println("Error: no se puede pasar a EN_PROCESO sin responsable asignado");
-                    return false;
-                } else {
-                    s.estado = nuevoEstado;
-                }
-            } else {
-                System.out.println("Error: transicion no permitida de PENDIENTE a " + nuevoEstado);
-                return false;
-            }
-        } else {
-            if (s.estado.equals("EN_PROCESO")) {
-                if (nuevoEstado.equals("RESUELTA")) {
-                    s.estado = nuevoEstado;
-                } else {
-                    System.out.println("Error: transicion no permitida de EN_PROCESO a " + nuevoEstado);
-                    return false;
-                }
-            } else {
-                if (s.estado.equals("RESUELTA")) {
-                    if (nuevoEstado.equals("CERRADA") || nuevoEstado.equals("EN_PROCESO")) {
-                        s.estado = nuevoEstado;
-                        if (nuevoEstado.equals("CERRADA")) {
-                            for (int i = 0; i < responsables.size(); i++) {
-                                if (responsables.get(i).nombre.equals(s.responsable)) {
-                                    responsables.get(i).cargaActual = responsables.get(i).cargaActual - 1;
-                                }
-                            }
-                        }
-                    } else {
-                        System.out.println("Error: transicion no permitida de RESUELTA a " + nuevoEstado);
-                        return false;
-                    }
-                } else {
-                    System.out.println("Error: la solicitud ya esta cerrada");
-                    return false;
-                }
-            }
+        if (!transicionValida(s, nuevoEstado)) {
+            return false;
+        }
+        s.estado = nuevoEstado;
+        if (nuevoEstado.equals("CERRADA")) {
+            liberarCarga(s.responsable);
         }
         guardar();
         System.out.println("Solicitud " + id + " ahora esta " + s.estado);
@@ -206,22 +167,12 @@ public class GestorSolicitudes {
     }
 
     public static boolean asignarResponsable(int id, String nombreResp) {
-        Solicitud s = null;
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).id == id) {
-                s = lista.get(i);
-            }
-        }
+        Solicitud s = buscarSolicitud(id);
         if (s == null) {
             System.out.println("Error: no existe la solicitud " + id);
             return false;
         }
-        Responsable r = null;
-        for (int i = 0; i < responsables.size(); i++) {
-            if (responsables.get(i).nombre.equals(nombreResp)) {
-                r = responsables.get(i);
-            }
-        }
+        Responsable r = buscarResponsable(nombreResp);
         if (r == null) {
             System.out.println("Error: no existe el responsable " + nombreResp);
             return false;
@@ -239,11 +190,7 @@ public class GestorSolicitudes {
             return false;
         }
         if (s.responsable != null) {
-            for (int i = 0; i < responsables.size(); i++) {
-                if (responsables.get(i).nombre.equals(s.responsable)) {
-                    responsables.get(i).cargaActual = responsables.get(i).cargaActual - 1;
-                }
-            }
+            liberarCarga(s.responsable);
         }
         s.responsable = r.nombre;
         r.cargaActual = r.cargaActual + 1;
@@ -321,35 +268,15 @@ public class GestorSolicitudes {
 
     public static void reporte() {
         System.out.println("===== REPORTE DE SOLICITUDES =====");
-        int p = 0;
-        int e = 0;
-        int r = 0;
-        int c = 0;
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).estado.equals("PENDIENTE")) {
-                p++;
-            }
-        }
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).estado.equals("EN_PROCESO")) {
-                e++;
-            }
-        }
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).estado.equals("RESUELTA")) {
-                r++;
-            }
-        }
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).estado.equals("CERRADA")) {
-                c++;
-            }
-        }
+        int pendientes = contarPorEstado("PENDIENTE");
+        int enProceso = contarPorEstado("EN_PROCESO");
+        int resueltas = contarPorEstado("RESUELTA");
+        int cerradas = contarPorEstado("CERRADA");
         System.out.println("Total: " + lista.size());
-        System.out.println("Pendientes: " + p);
-        System.out.println("En proceso: " + e);
-        System.out.println("Resueltas: " + r);
-        System.out.println("Cerradas: " + c);
+        System.out.println("Pendientes: " + pendientes);
+        System.out.println("En proceso: " + enProceso);
+        System.out.println("Resueltas: " + resueltas);
+        System.out.println("Cerradas: " + cerradas);
         System.out.println("--- Detalle ---");
         for (int i = 0; i < lista.size(); i++) {
             Solicitud s = lista.get(i);
@@ -370,5 +297,79 @@ public class GestorSolicitudes {
 
     static void imprimirDebug(Solicitud s) {
         System.out.println("DEBUG: " + s.id + " " + s.estado);
+    }
+
+
+    // ---- metodos auxiliares (salen de los metodos largos de arriba) ----
+
+    // busca una solicitud por su id, devuelve null si no existe
+    static Solicitud buscarSolicitud(int id) {
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).id == id) {
+                return lista.get(i);
+            }
+        }
+        return null;
+    }
+
+    // busca un responsable por su nombre, devuelve null si no existe
+    static Responsable buscarResponsable(String nombre) {
+        for (int i = 0; i < responsables.size(); i++) {
+            if (responsables.get(i).nombre.equals(nombre)) {
+                return responsables.get(i);
+            }
+        }
+        return null;
+    }
+
+    // le baja en 1 la carga al responsable con ese nombre
+    static void liberarCarga(String nombreResp) {
+        for (int i = 0; i < responsables.size(); i++) {
+            if (responsables.get(i).nombre.equals(nombreResp)) {
+                responsables.get(i).cargaActual = responsables.get(i).cargaActual - 1;
+            }
+        }
+    }
+
+    // cuenta cuantas solicitudes hay en un estado
+    static int contarPorEstado(String estado) {
+        int cantidad = 0;
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).estado.equals(estado)) {
+                cantidad++;
+            }
+        }
+        return cantidad;
+    }
+
+    // controla si la solicitud puede pasar al nuevo estado; si no puede, imprime el motivo
+    static boolean transicionValida(Solicitud s, String nuevoEstado) {
+        if (s.estado.equals("PENDIENTE")) {
+            if (!nuevoEstado.equals("EN_PROCESO")) {
+                System.out.println("Error: transicion no permitida de PENDIENTE a " + nuevoEstado);
+                return false;
+            }
+            if (s.responsable == null) {
+                System.out.println("Error: no se puede pasar a EN_PROCESO sin responsable asignado");
+                return false;
+            }
+            return true;
+        }
+        if (s.estado.equals("EN_PROCESO")) {
+            if (!nuevoEstado.equals("RESUELTA")) {
+                System.out.println("Error: transicion no permitida de EN_PROCESO a " + nuevoEstado);
+                return false;
+            }
+            return true;
+        }
+        if (s.estado.equals("RESUELTA")) {
+            if (!(nuevoEstado.equals("CERRADA") || nuevoEstado.equals("EN_PROCESO"))) {
+                System.out.println("Error: transicion no permitida de RESUELTA a " + nuevoEstado);
+                return false;
+            }
+            return true;
+        }
+        System.out.println("Error: la solicitud ya esta cerrada");
+        return false;
     }
 }
