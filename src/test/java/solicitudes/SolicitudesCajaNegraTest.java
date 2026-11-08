@@ -79,11 +79,12 @@ public class SolicitudesCajaNegraTest {
         assertTrue(salida.contains("#1 | Maria Lopez (12345) | CERTIFICADO"));
     }
 
-    // bug conocido (smell S10): un ; en el nombre rompe el archivo y despues el reporte se cae
+    // bug conocido (smell S10): un; en el nombre rompe el archivo. Con los enums ya no se cae el reporte,
+    // pero la solicitud se pierde sin avisar al volver a abrir el programa
     @Test
-    void nombreConPuntoYComaRompeElReporte(@TempDir Path carpeta) throws Exception {
+    void nombreConPuntoYComaHaceQueSePierdaLaSolicitud(@TempDir Path carpeta) throws Exception {
         ejecutar(carpeta, registro("Perez; Juan", "99999", "pj@example.com") + "0\n");
         String salida = ejecutar(carpeta, "5\n0\n");
-        assertTrue(salida.contains("DateTimeParseException"));
+        assertTrue(salida.contains("Total: 0"));
     }
 }

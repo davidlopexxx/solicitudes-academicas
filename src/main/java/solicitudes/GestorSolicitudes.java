@@ -39,9 +39,8 @@ public class GestorSolicitudes {
             System.out.println("Error: email invalido");
             return -1;
         }
-        // if (tipo == "CERTIFICADO" || tipo == "EQUIVALENCIA") {
-        if (!(datos.tipo().equals("CERTIFICADO") || datos.tipo().equals("EQUIVALENCIA")
-                || datos.tipo().equals("REINCORPORACION") || datos.tipo().equals("OTRO"))) {
+        TipoSolicitud tipo = TipoSolicitud.desdeTexto(datos.tipo());
+        if (tipo == null) {
             System.out.println("Error: tipo invalido");
             return -1;
         }
@@ -49,8 +48,8 @@ public class GestorSolicitudes {
             System.out.println("Error: la descripcion debe tener al menos 10 caracteres");
             return -1;
         }
-        if (!(datos.prioridad().equals("ALTA") || datos.prioridad().equals("MEDIA")
-                || datos.prioridad().equals("BAJA"))) {
+        Prioridad prioridad = Prioridad.desdeTexto(datos.prioridad());
+        if (prioridad == null) {
             System.out.println("Error: prioridad invalida");
             return -1;
         }
@@ -68,22 +67,13 @@ public class GestorSolicitudes {
         contador = contador + 1;
         s.id = contador;
         s.estudiante = est;
-        s.tipo = datos.tipo();
+        s.tipo = tipo;
         s.descripcion = datos.descripcion();
-        s.prioridad = datos.prioridad();
-        s.estado = "PENDIENTE";
+        s.prioridad = prioridad;
+        s.estado = Estado.PENDIENTE;
         s.fechaCreacion = datos.fecha();
         s.responsable = null;
-        // el area depende del tipo
-        if (datos.tipo().equals("CERTIFICADO")) {
-            s.area = "Alumnado";
-        } else if (datos.tipo().equals("EQUIVALENCIA")) {
-            s.area = "Academica";
-        } else if (datos.tipo().equals("REINCORPORACION")) {
-            s.area = "Alumnado";
-        } else {
-            s.area = "Mesa de Entradas";
-        }
+        s.area = tipo.getArea();
         lista.add(s);
         guardar();
         System.out.println("Solicitud registrada con id " + s.id + " (area: " + s.area + ")");
@@ -118,10 +108,10 @@ public class GestorSolicitudes {
                 est.legajo = t[2];
                 est.email = t[3];
                 s.estudiante = est;
-                s.tipo = t[4];
+                s.tipo = TipoSolicitud.valueOf(t[4]);
                 s.descripcion = t[5];
-                s.prioridad = t[6];
-                s.estado = t[7];
+                s.prioridad = Prioridad.valueOf(t[6]);
+                s.estado = Estado.valueOf(t[7]);
                 s.fechaCreacion = t[8];
                 if (t[9].equals("null")) {
                     s.responsable = null;
@@ -133,7 +123,7 @@ public class GestorSolicitudes {
                 if (s.id > contador) {
                     contador = s.id;
                 }
-                if (s.responsable != null && !s.estado.equals("CERRADA")) {
+                if (s.responsable != null && s.estado != Estado.CERRADA) {
                     for (int i = 0; i < responsables.size(); i++) {
                         if (responsables.get(i).nombre.equals(s.responsable)) {
                             responsables.get(i).cargaActual = responsables.get(i).cargaActual + 1;
@@ -147,7 +137,6 @@ public class GestorSolicitudes {
         }
     }
 
-
     public static boolean cambiarEstado(int id, String nuevoEstado) {
         Solicitud s = buscarSolicitud(id);
         if (s == null) {
@@ -157,8 +146,8 @@ public class GestorSolicitudes {
         if (!transicionValida(s, nuevoEstado)) {
             return false;
         }
-        s.estado = nuevoEstado;
-        if (nuevoEstado.equals("CERRADA")) {
+        s.estado = Estado.desdeTexto(nuevoEstado);
+        if (s.estado == Estado.CERRADA) {
             liberarCarga(s.responsable);
         }
         guardar();
@@ -177,7 +166,7 @@ public class GestorSolicitudes {
             System.out.println("Error: no existe el responsable " + nombreResp);
             return false;
         }
-        if (s.estado.equals("CERRADA")) {
+        if (s.estado == Estado.CERRADA) {
             System.out.println("Error: no se puede asignar una solicitud cerrada");
             return false;
         }
@@ -199,12 +188,11 @@ public class GestorSolicitudes {
         return true;
     }
 
-
     public static void buscarPorEstado(String estado) {
         int n = 0;
         for (int i = 0; i < lista.size(); i++) {
             Solicitud s = lista.get(i);
-            if (s.estado.equals(estado)) {
+            if (s.estado.name().equals(estado)) {
                 System.out.println("#" + s.id + " | " + s.estudiante.nombre + " | " + s.tipo + " | " + s.prioridad
                         + " | " + s.estado + " | " + (s.responsable == null ? "sin asignar" : s.responsable));
                 n++;
@@ -217,7 +205,7 @@ public class GestorSolicitudes {
         int n = 0;
         for (int i = 0; i < lista.size(); i++) {
             Solicitud s = lista.get(i);
-            if (s.tipo.equals(tipo)) {
+            if (s.tipo.name().equals(tipo)) {
                 System.out.println("#" + s.id + " | " + s.estudiante.nombre + " | " + s.tipo + " | " + s.prioridad
                         + " | " + s.estado + " | " + (s.responsable == null ? "sin asignar" : s.responsable));
                 n++;
@@ -239,28 +227,15 @@ public class GestorSolicitudes {
         System.out.println("Total encontradas: " + n);
     }
 
-    // dias que tiene la oficina para resolver segun el tipo
-    static int dias(String t) {
-        if (t.equals("CERTIFICADO")) {
-            return 5;
-        } else if (t.equals("EQUIVALENCIA")) {
-            return 15;
-        } else if (t.equals("REINCORPORACION")) {
-            return 10;
-        } else {
-            return 7;
-        }
-    }
-
     static String calcularVencimiento(Solicitud s) {
         DateTimeFormatter f = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate d = LocalDate.parse(s.fechaCreacion, f);
-        return d.plusDays(dias(s.tipo)).format(f);
+        return d.plusDays(s.tipo.getDias()).format(f);
     }
 
     static boolean esUrgente(Solicitud s) {
-        if ((s.prioridad.equals("ALTA") || s.tipo.equals("REINCORPORACION")) && !s.estado.equals("RESUELTA")
-                && !s.estado.equals("CERRADA")) {
+        if ((s.prioridad == Prioridad.ALTA || s.tipo == TipoSolicitud.REINCORPORACION)
+                && s.estado != Estado.RESUELTA && s.estado != Estado.CERRADA) {
             return true;
         }
         return false;
@@ -268,10 +243,10 @@ public class GestorSolicitudes {
 
     public static void reporte() {
         System.out.println("===== REPORTE DE SOLICITUDES =====");
-        int pendientes = contarPorEstado("PENDIENTE");
-        int enProceso = contarPorEstado("EN_PROCESO");
-        int resueltas = contarPorEstado("RESUELTA");
-        int cerradas = contarPorEstado("CERRADA");
+        int pendientes = contarPorEstado(Estado.PENDIENTE);
+        int enProceso = contarPorEstado(Estado.EN_PROCESO);
+        int resueltas = contarPorEstado(Estado.RESUELTA);
+        int cerradas = contarPorEstado(Estado.CERRADA);
         System.out.println("Total: " + lista.size());
         System.out.println("Pendientes: " + pendientes);
         System.out.println("En proceso: " + enProceso);
@@ -298,7 +273,6 @@ public class GestorSolicitudes {
     static void imprimirDebug(Solicitud s) {
         System.out.println("DEBUG: " + s.id + " " + s.estado);
     }
-
 
     // ---- metodos auxiliares (salen de los metodos largos de arriba) ----
 
@@ -332,10 +306,10 @@ public class GestorSolicitudes {
     }
 
     // cuenta cuantas solicitudes hay en un estado
-    static int contarPorEstado(String estado) {
+    static int contarPorEstado(Estado estado) {
         int cantidad = 0;
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).estado.equals(estado)) {
+            if (lista.get(i).estado == estado) {
                 cantidad++;
             }
         }
@@ -343,33 +317,20 @@ public class GestorSolicitudes {
     }
 
     // controla si la solicitud puede pasar al nuevo estado; si no puede, imprime el motivo
-    static boolean transicionValida(Solicitud s, String nuevoEstado) {
-        if (s.estado.equals("PENDIENTE")) {
-            if (!nuevoEstado.equals("EN_PROCESO")) {
-                System.out.println("Error: transicion no permitida de PENDIENTE a " + nuevoEstado);
-                return false;
-            }
-            if (s.responsable == null) {
-                System.out.println("Error: no se puede pasar a EN_PROCESO sin responsable asignado");
-                return false;
-            }
-            return true;
+    static boolean transicionValida(Solicitud s, String textoNuevoEstado) {
+        if (s.estado == Estado.CERRADA) {
+            System.out.println("Error: la solicitud ya esta cerrada");
+            return false;
         }
-        if (s.estado.equals("EN_PROCESO")) {
-            if (!nuevoEstado.equals("RESUELTA")) {
-                System.out.println("Error: transicion no permitida de EN_PROCESO a " + nuevoEstado);
-                return false;
-            }
-            return true;
+        Estado nuevo = Estado.desdeTexto(textoNuevoEstado);
+        if (nuevo == null || !s.estado.puedePasarA(nuevo)) {
+            System.out.println("Error: transicion no permitida de " + s.estado + " a " + textoNuevoEstado);
+            return false;
         }
-        if (s.estado.equals("RESUELTA")) {
-            if (!(nuevoEstado.equals("CERRADA") || nuevoEstado.equals("EN_PROCESO"))) {
-                System.out.println("Error: transicion no permitida de RESUELTA a " + nuevoEstado);
-                return false;
-            }
-            return true;
+        if (s.estado == Estado.PENDIENTE && s.responsable == null) {
+            System.out.println("Error: no se puede pasar a EN_PROCESO sin responsable asignado");
+            return false;
         }
-        System.out.println("Error: la solicitud ya esta cerrada");
-        return false;
+        return true;
     }
 }
