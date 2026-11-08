@@ -61,7 +61,6 @@ Valoración: **Sí** (cumple), **Parcial** (cumple a medias) y **No** (no cumple
 | E2 | ¿Se prueban los casos de error y no solo el camino feliz? | No | Sí | Email inválido, nombre vacío, límite de 3 solicitudes, transiciones no permitidas, archivo dañado. |
 | E3 | ¿Las pruebas son independientes entre sí y no dejan archivos? | No aplica | Sí | Usan `@TempDir` o el repositorio en memoria. |
 | E4 | ¿La cobertura es aceptable? | Sin medir | Sí | 72 % de las líneas y 97 % de los métodos. Gestor 93 %, reporte 100 %, repositorio CSV 96 %. |
-| E5 | ¿Se comprobó que las pruebas detectan errores? | No | Sí | Se rompió el código a propósito de 5 maneras y en las 5 falló al menos una prueba. |
 
 ### F. Modelo de datos
 
@@ -80,7 +79,7 @@ Valoración: **Sí** (cumple), **Parcial** (cumple a medias) y **No** (no cumple
 | G3 | ¿Los archivos generados no se suben? | Sí | Sí | `.gitignore` con `.idea/`, `target/` y `solicitudes.csv`. |
 | G4 | ¿El README explica cómo ejecutar y probar? | Parcial | Sí | Se actualizó con las pruebas y la estructura del código. |
 
-**Resultado:** de los 32 puntos revisados, la v2 cumple 25 del todo, 6 en parte y 1 no lo cumple (los campos públicos). Los 7 puntos pendientes son la deuda que explicamos en la parte 2.
+**Resultado:** de los 31 puntos revisados, la v2 cumple 24 del todo, 6 en parte y 1 no lo cumple (los campos públicos). Los 7 puntos pendientes son la deuda que explicamos en la parte 2.
 
 ---
 
