@@ -1,7 +1,6 @@
 package solicitudes;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,7 +83,7 @@ public class GestorSolicitudes {
             return -1;
         }
         try {
-            LocalDate.parse(datos.fecha(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            LocalDate.parse(datos.fecha(), Solicitud.FORMATO_FECHA);
         } catch (Exception e) {
             System.out.println("Error: fecha invalida, use dd/MM/yyyy");
             return -1;
