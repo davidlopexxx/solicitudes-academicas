@@ -79,12 +79,20 @@ public class SolicitudesCajaNegraTest {
         assertTrue(salida.contains("#1 | Maria Lopez (12345) | CERTIFICADO"));
     }
 
-    // bug conocido (smell S10): un; en el nombre rompe el archivo. Con los enums ya no se cae el reporte,
-    // pero la solicitud se pierde sin avisar al volver a abrir el programa
+    // el ; en el nombre ya no rompe el archivo: se guarda codificado y vuelve igual al leerlo
     @Test
-    void nombreConPuntoYComaHaceQueSePierdaLaSolicitud(@TempDir Path carpeta) throws Exception {
+    void nombreConPuntoYComaSeConservaAlVolverAAbrirElPrograma(@TempDir Path carpeta) throws Exception {
         ejecutar(carpeta, registro("Perez; Juan", "99999", "pj@example.com") + "0\n");
         String salida = ejecutar(carpeta, "5\n0\n");
-        assertTrue(salida.contains("Total: 0"));
+        assertTrue(salida.contains("Total: 1"));
+        assertTrue(salida.contains("#1 | Perez; Juan (99999) | CERTIFICADO"));
+    }
+
+    // si el archivo guardado esta danado, el programa avisa y no sigue (antes se perdian solicitudes sin aviso)
+    @Test
+    void unArchivoDanadoHaceQueElProgramaAvise(@TempDir Path carpeta) throws Exception {
+        Files.writeString(carpeta.resolve("solicitudes.csv"), "esto no es una solicitud\n", StandardCharsets.UTF_8);
+        String salida = ejecutar(carpeta, "5\n0\n");
+        assertTrue(salida.contains("Error al leer los datos guardados"));
     }
 }

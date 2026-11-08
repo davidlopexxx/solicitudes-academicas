@@ -6,10 +6,16 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        GestorSolicitudes.agregarResponsable("Ana Gomez", "Alumnado");
-        GestorSolicitudes.agregarResponsable("Carlos Ruiz", "Academica");
-        GestorSolicitudes.agregarResponsable("Laura Pena", "Mesa de Entradas");
-        GestorSolicitudes.cargar();
+        GestorSolicitudes gestor = new GestorSolicitudes(new RepositorioCsv("solicitudes.csv"));
+        gestor.agregarResponsable("Ana Gomez", "Alumnado");
+        gestor.agregarResponsable("Carlos Ruiz", "Academica");
+        gestor.agregarResponsable("Laura Pena", "Mesa de Entradas");
+        try {
+            gestor.cargar();
+        } catch (RuntimeException e) {
+            System.out.println("Error al leer los datos guardados: " + e.getMessage());
+            return;
+        }
         int op = -1;
         while (op != 0 && sc.hasNextLine()) {
             System.out.println();
@@ -44,7 +50,7 @@ public class Main {
                 System.out.print("Fecha (dd/MM/yyyy): ");
                 String fecha = sc.nextLine();
                 DatosSolicitud datos = new DatosSolicitud(nombre, legajo, email, tipo, desc, prioridad, fecha);
-                GestorSolicitudes.registrarSolicitud(datos);
+                gestor.registrarSolicitud(datos);
             } else if (op == 2) {
                 System.out.print("Id de la solicitud: ");
                 int id = 0;
@@ -56,7 +62,7 @@ public class Main {
                 }
                 System.out.print("Nuevo estado (PENDIENTE/EN_PROCESO/RESUELTA/CERRADA): ");
                 String nuevo = sc.nextLine().toUpperCase();
-                GestorSolicitudes.cambiarEstado(id, nuevo);
+                gestor.cambiarEstado(id, nuevo);
             } else if (op == 3) {
                 System.out.print("Id de la solicitud: ");
                 int id = 0;
@@ -68,7 +74,7 @@ public class Main {
                 }
                 System.out.print("Nombre del responsable: ");
                 String resp = sc.nextLine();
-                GestorSolicitudes.asignarResponsable(id, resp);
+                gestor.asignarResponsable(id, resp);
             } else if (op == 4) {
                 System.out.println("1. Por estado");
                 System.out.println("2. Por tipo");
@@ -77,18 +83,18 @@ public class Main {
                 String sub = sc.nextLine();
                 if (sub.equals("1")) {
                     System.out.print("Estado: ");
-                    GestorSolicitudes.buscarPorEstado(sc.nextLine().toUpperCase());
+                    gestor.buscarPorEstado(sc.nextLine().toUpperCase());
                 } else if (sub.equals("2")) {
                     System.out.print("Tipo: ");
-                    GestorSolicitudes.buscarPorTipo(sc.nextLine().toUpperCase());
+                    gestor.buscarPorTipo(sc.nextLine().toUpperCase());
                 } else if (sub.equals("3")) {
                     System.out.print("Legajo: ");
-                    GestorSolicitudes.buscarPorLegajo(sc.nextLine());
+                    gestor.buscarPorLegajo(sc.nextLine());
                 } else {
                     System.out.println("Opcion invalida");
                 }
             } else if (op == 5) {
-                GestorSolicitudes.reporte();
+                gestor.reporte();
             } else if (op != 0) {
                 System.out.println("Opcion invalida");
             }

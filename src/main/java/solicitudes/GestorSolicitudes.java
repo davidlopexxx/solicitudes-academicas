@@ -1,32 +1,51 @@
 package solicitudes;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
 
 public class GestorSolicitudes {
 
-    public static ArrayList<Solicitud> lista = new ArrayList<Solicitud>();
-    public static ArrayList<Responsable> responsables = new ArrayList<Responsable>();
-    static int contador = 0;
-    static String archivo = "solicitudes.csv";
-    static int x = 0;
+    private final RepositorioSolicitudes repositorio;
+    private List<Solicitud> lista = new ArrayList<>();
+    private final List<Responsable> responsables = new ArrayList<>();
+    private int contador = 0;
 
-    public static void agregarResponsable(String n, String a) {
+    public GestorSolicitudes(RepositorioSolicitudes repositorio) {
+        this.repositorio = repositorio;
+    }
+
+    public void agregarResponsable(String nombre, String area) {
         Responsable r = new Responsable();
-        r.nombre = n;
-        r.area = a;
+        r.nombre = nombre;
+        r.area = area;
         r.cargaActual = 0;
         responsables.add(r);
     }
 
+    // lee las solicitudes guardadas y recalcula cuantas solicitudes activas tiene cada responsable
+    public void cargar() {
+        lista = repositorio.cargar();
+        for (Solicitud s : lista) {
+            if (s.id > contador) {
+                contador = s.id;
+            }
+            if (s.responsable != null && s.estado != Estado.CERRADA) {
+                Responsable r = buscarResponsable(s.responsable);
+                if (r != null) {
+                    r.sumarCarga();
+                }
+            }
+        }
+    }
+
+    private void guardar() {
+        repositorio.guardar(lista);
+    }
+
     // registra una solicitud nueva, devuelve el id o -1 si hubo un error
-    public static int registrarSolicitud(DatosSolicitud datos) {
+    public int registrarSolicitud(DatosSolicitud datos) {
         if (datos.nombre() == null || datos.nombre().trim().equals("")) {
             System.out.println("Error: el nombre no puede estar vacio");
             return -1;
@@ -80,63 +99,7 @@ public class GestorSolicitudes {
         return s.id;
     }
 
-    public static void guardar() {
-        try {
-            FileWriter fw = new FileWriter(archivo);
-            for (int i = 0; i < lista.size(); i++) {
-                Solicitud s = lista.get(i);
-                fw.write(s.id + ";" + s.estudiante.nombre + ";" + s.estudiante.legajo + ";" + s.estudiante.email + ";"
-                        + s.tipo + ";" + s.descripcion.replace(";", ",") + ";" + s.prioridad + ";" + s.estado + ";"
-                        + s.fechaCreacion + ";" + s.responsable + ";" + s.area + "\n");
-            }
-            fw.close();
-        } catch (IOException e) {
-            // nada
-        }
-    }
-
-    public static void cargar() {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(archivo));
-            String linea = br.readLine();
-            while (linea != null) {
-                String[] t = linea.split(";");
-                Solicitud s = new Solicitud();
-                Estudiante est = new Estudiante();
-                s.id = Integer.parseInt(t[0]);
-                est.nombre = t[1];
-                est.legajo = t[2];
-                est.email = t[3];
-                s.estudiante = est;
-                s.tipo = TipoSolicitud.valueOf(t[4]);
-                s.descripcion = t[5];
-                s.prioridad = Prioridad.valueOf(t[6]);
-                s.estado = Estado.valueOf(t[7]);
-                s.fechaCreacion = t[8];
-                if (t[9].equals("null")) {
-                    s.responsable = null;
-                } else {
-                    s.responsable = t[9];
-                }
-                s.area = t[10];
-                lista.add(s);
-                if (s.id > contador) {
-                    contador = s.id;
-                }
-                if (s.responsable != null && s.estado != Estado.CERRADA) {
-                    Responsable r = buscarResponsable(s.responsable);
-                    if (r != null) {
-                        r.sumarCarga();
-                    }
-                }
-                linea = br.readLine();
-            }
-            br.close();
-        } catch (Exception e) {
-        }
-    }
-
-    public static boolean cambiarEstado(int id, String nuevoEstado) {
+    public boolean cambiarEstado(int id, String nuevoEstado) {
         Solicitud s = buscarSolicitud(id);
         if (s == null) {
             System.out.println("Error: no existe la solicitud " + id);
@@ -154,7 +117,7 @@ public class GestorSolicitudes {
         return true;
     }
 
-    public static boolean asignarResponsable(int id, String nombreResp) {
+    public boolean asignarResponsable(int id, String nombreResp) {
         Solicitud s = buscarSolicitud(id);
         if (s == null) {
             System.out.println("Error: no existe la solicitud " + id);
@@ -187,7 +150,7 @@ public class GestorSolicitudes {
         return true;
     }
 
-    public static void buscarPorEstado(String estado) {
+    public void buscarPorEstado(String estado) {
         int n = 0;
         for (int i = 0; i < lista.size(); i++) {
             Solicitud s = lista.get(i);
@@ -200,7 +163,7 @@ public class GestorSolicitudes {
         System.out.println("Total encontradas: " + n);
     }
 
-    public static void buscarPorTipo(String tipo) {
+    public void buscarPorTipo(String tipo) {
         int n = 0;
         for (int i = 0; i < lista.size(); i++) {
             Solicitud s = lista.get(i);
@@ -213,7 +176,7 @@ public class GestorSolicitudes {
         System.out.println("Total encontradas: " + n);
     }
 
-    public static void buscarPorLegajo(String legajo) {
+    public void buscarPorLegajo(String legajo) {
         int n = 0;
         for (int i = 0; i < lista.size(); i++) {
             Solicitud s = lista.get(i);
@@ -226,7 +189,7 @@ public class GestorSolicitudes {
         System.out.println("Total encontradas: " + n);
     }
 
-    public static void reporte() {
+    public void reporte() {
         System.out.println("===== REPORTE DE SOLICITUDES =====");
         int pendientes = contarPorEstado(Estado.PENDIENTE);
         int enProceso = contarPorEstado(Estado.EN_PROCESO);
@@ -255,14 +218,10 @@ public class GestorSolicitudes {
         }
     }
 
-    static void imprimirDebug(Solicitud s) {
-        System.out.println("DEBUG: " + s.id + " " + s.estado);
-    }
-
     // ---- metodos auxiliares (salen de los metodos largos de arriba) ----
 
     // busca una solicitud por su id, devuelve null si no existe
-    static Solicitud buscarSolicitud(int id) {
+    private Solicitud buscarSolicitud(int id) {
         for (int i = 0; i < lista.size(); i++) {
             if (lista.get(i).id == id) {
                 return lista.get(i);
@@ -272,7 +231,7 @@ public class GestorSolicitudes {
     }
 
     // busca un responsable por su nombre, devuelve null si no existe
-    static Responsable buscarResponsable(String nombre) {
+    private Responsable buscarResponsable(String nombre) {
         for (int i = 0; i < responsables.size(); i++) {
             if (responsables.get(i).nombre.equals(nombre)) {
                 return responsables.get(i);
@@ -282,7 +241,7 @@ public class GestorSolicitudes {
     }
 
     // le baja en 1 la carga al responsable con ese nombre
-    static void liberarCarga(String nombreResp) {
+    private void liberarCarga(String nombreResp) {
         Responsable r = buscarResponsable(nombreResp);
         if (r != null) {
             r.restarCarga();
@@ -290,7 +249,7 @@ public class GestorSolicitudes {
     }
 
     // cuenta cuantas solicitudes hay en un estado
-    static int contarPorEstado(Estado estado) {
+    private int contarPorEstado(Estado estado) {
         int cantidad = 0;
         for (int i = 0; i < lista.size(); i++) {
             if (lista.get(i).estado == estado) {
@@ -301,7 +260,7 @@ public class GestorSolicitudes {
     }
 
     // controla si la solicitud puede pasar al nuevo estado; si no puede, imprime el motivo
-    static boolean transicionValida(Solicitud s, String textoNuevoEstado) {
+    private boolean transicionValida(Solicitud s, String textoNuevoEstado) {
         if (s.estado == Estado.CERRADA) {
             System.out.println("Error: la solicitud ya esta cerrada");
             return false;
