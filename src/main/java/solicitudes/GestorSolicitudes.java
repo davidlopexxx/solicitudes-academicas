@@ -26,60 +26,60 @@ public class GestorSolicitudes {
     }
 
     // registra una solicitud nueva, devuelve el id o -1 si hubo un error
-    public static int registrarSolicitud(String nombre, String legajo, String email, String tipo,
-                                         String descripcion, String prioridad, String fecha) {
-        if (nombre == null || nombre.trim().equals("")) {
+    public static int registrarSolicitud(DatosSolicitud datos) {
+        if (datos.nombre() == null || datos.nombre().trim().equals("")) {
             System.out.println("Error: el nombre no puede estar vacio");
             return -1;
         }
-        if (legajo == null || legajo.trim().equals("")) {
+        if (datos.legajo() == null || datos.legajo().trim().equals("")) {
             System.out.println("Error: el legajo no puede estar vacio");
             return -1;
         }
-        if (email == null || !email.contains("@")) {
+        if (datos.email() == null || !datos.email().contains("@")) {
             System.out.println("Error: email invalido");
             return -1;
         }
         // if (tipo == "CERTIFICADO" || tipo == "EQUIVALENCIA") {
-        if (!(tipo.equals("CERTIFICADO") || tipo.equals("EQUIVALENCIA") || tipo.equals("REINCORPORACION")
-                || tipo.equals("OTRO"))) {
+        if (!(datos.tipo().equals("CERTIFICADO") || datos.tipo().equals("EQUIVALENCIA")
+                || datos.tipo().equals("REINCORPORACION") || datos.tipo().equals("OTRO"))) {
             System.out.println("Error: tipo invalido");
             return -1;
         }
-        if (descripcion == null || descripcion.length() < 10) {
+        if (datos.descripcion() == null || datos.descripcion().length() < 10) {
             System.out.println("Error: la descripcion debe tener al menos 10 caracteres");
             return -1;
         }
-        if (!(prioridad.equals("ALTA") || prioridad.equals("MEDIA") || prioridad.equals("BAJA"))) {
+        if (!(datos.prioridad().equals("ALTA") || datos.prioridad().equals("MEDIA")
+                || datos.prioridad().equals("BAJA"))) {
             System.out.println("Error: prioridad invalida");
             return -1;
         }
         try {
-            LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            LocalDate.parse(datos.fecha(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         } catch (Exception e) {
             System.out.println("Error: fecha invalida, use dd/MM/yyyy");
             return -1;
         }
         Estudiante est = new Estudiante();
-        est.nombre = nombre;
-        est.legajo = legajo;
-        est.email = email;
+        est.nombre = datos.nombre();
+        est.legajo = datos.legajo();
+        est.email = datos.email();
         Solicitud s = new Solicitud();
         contador = contador + 1;
         s.id = contador;
         s.estudiante = est;
-        s.tipo = tipo;
-        s.descripcion = descripcion;
-        s.prioridad = prioridad;
+        s.tipo = datos.tipo();
+        s.descripcion = datos.descripcion();
+        s.prioridad = datos.prioridad();
         s.estado = "PENDIENTE";
-        s.fechaCreacion = fecha;
+        s.fechaCreacion = datos.fecha();
         s.responsable = null;
         // el area depende del tipo
-        if (tipo.equals("CERTIFICADO")) {
+        if (datos.tipo().equals("CERTIFICADO")) {
             s.area = "Alumnado";
-        } else if (tipo.equals("EQUIVALENCIA")) {
+        } else if (datos.tipo().equals("EQUIVALENCIA")) {
             s.area = "Academica";
-        } else if (tipo.equals("REINCORPORACION")) {
+        } else if (datos.tipo().equals("REINCORPORACION")) {
             s.area = "Alumnado";
         } else {
             s.area = "Mesa de Entradas";

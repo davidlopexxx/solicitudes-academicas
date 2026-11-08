@@ -43,7 +43,8 @@ public class Main {
                 String prioridad = sc.nextLine().toUpperCase();
                 System.out.print("Fecha (dd/MM/yyyy): ");
                 String fecha = sc.nextLine();
-                GestorSolicitudes.registrarSolicitud(nombre, legajo, email, tipo, desc, prioridad, fecha);
+                DatosSolicitud datos = new DatosSolicitud(nombre, legajo, email, tipo, desc, prioridad, fecha);
+                GestorSolicitudes.registrarSolicitud(datos);
             } else if (op == 2) {
                 System.out.print("Id de la solicitud: ");
                 int id = 0;
