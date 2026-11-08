@@ -49,7 +49,7 @@ Conclusión: los problemas internos de hoy son los errores visibles de mañana.
 
 ## 2. Métricas del código (versión inicial)
 
-Herramienta: **Lizard**, ejecutada por el grupo de trabajo (con asistencia de Gemini) sobre el código del tag `estado-inicial`.
+Herramienta: **Lizard**, ejecutada por el grupo de trabajo sobre el código del tag `estado-inicial`.
 **NLOC** = líneas de código sin contar vacías ni comentarios. **CCN** = complejidad ciclomática (cantidad de caminos distintos dentro del método; arriba de 10 ya se considera alta).
 
 | Método | Líneas (archivo) | NLOC | CCN | Parámetros |
@@ -134,18 +134,21 @@ Los costos son una estimación aproximada del grupo, para ordenar el trabajo.
 
 ---
 
-## 5. Plan inicial de refactoring
+## 5. Plan de refactoring
 
-Este plan se ajusta durante la etapa 5. Cada refactoring va en un commit propio.
+El plan inicial se ajustó durante la etapa 5. Cada refactoring va en un commit propio. Lo que se hizo en cada uno, con las métricas y las decisiones, está en `docs/decisiones_tecnicas.md`.
 
-| Refactoring | Técnica | Smells que ataca | Quién |
-|---|---|---|---|
-| R1 | **Extract Method**: partir `cambiarEstado` y `reporte` en métodos chicos (`buscarSolicitud`, `liberarCarga`, `contarPorEstado`) | S2, S3, S6 | Angel |
-| R2 | **Introduce Parameter Object**: un `record DatosSolicitud` en lugar de los 7 parámetros | S4 | Angel |
-| R3 | **Replace Type Code with Enum**: `Estado`, `TipoSolicitud` (con área y días) y `Prioridad` | S5, S7, S8 | Leandro |
-| R4 | **Move Method**: `esUrgente` y `calcularVencimiento` pasan a `Solicitud`; la carga pasa a `Responsable` | S11, S14 | Leandro |
-| R5 | **Extract Class**: sacar la persistencia a un repositorio y el reporte a su propia clase, sin estado estático | S1, S9, S10, S12 | A definir |
+| Refactoring | Técnica | Smells que ataca | Quién | Commit |
+|---|---|---|---|---|
+| R1 | **Extract Method**: partir `cambiarEstado` y `reporte` en métodos chicos (`buscarSolicitud`, `liberarCarga`, `contarPorEstado`) | S2, S3, S6 | Angel | `6da4cd4` |
+| R2 | **Introduce Parameter Object**: un `record DatosSolicitud` en lugar de los 7 parámetros | S4 | Angel | `b5ca551` |
+| R3 | **Replace Type Code with Enum**: `Estado`, `TipoSolicitud` (con área y días) y `Prioridad` | S5, S7, S8 | Leandro | `b577a1c` |
+| R4 | **Move Method**: `esUrgente` y `calcularVencimiento` pasan a `Solicitud`; la carga pasa a `Responsable` | S11, S14 | Leandro | `4e11e59` |
+| R5 | **Extract Class**: la persistencia pasa a `RepositorioCsv` detrás de la interfaz `RepositorioSolicitudes`; el gestor deja de ser estático | S1, S9, S10, S13 | Angel | `4332050` |
+| R6 | **Extract Class**: `ReporteSolicitudes` (reporte y búsquedas) fuera del gestor | S1, S6 | Leandro | `6b1bcac` |
+
+El plan original juntaba la persistencia y el reporte en un solo refactoring (R5). Se separó en dos (R5 y R6) para que cada commit cambie una sola cosa y se pueda verificar por separado.
 
 ---
 
-*Las métricas se calcularon con Lizard. La redacción de este documento se hizo con ayuda de Gemini IA; el grupo realizo y probó el sistema. El detalle del uso de IA está en el informe del TPI.*
+*Las métricas se calcularon con Lizard. La redacción de este documento se hizo con ayuda de Claude (Anthropic); el grupo realizó y probó el sistema. El detalle del uso de IA está en el informe del TPI.*

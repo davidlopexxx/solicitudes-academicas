@@ -1,0 +1,73 @@
+================================================
+  NLOC    CCN   token  PARAM  length  location  
+------------------------------------------------
+       8      3     39      1       8 Prioridad::desdeTexto@7-14@Prioridad.java
+       4      1     28      2       4 ReporteSolicitudes::ReporteSolicitudes@12-15@ReporteSolicitudes.java
+       3      1     25      1       3 ReporteSolicitudes::buscarPorEstado@17-19@ReporteSolicitudes.java
+       3      1     25      1       3 ReporteSolicitudes::buscarPorTipo@21-23@ReporteSolicitudes.java
+       3      1     23      1       3 ReporteSolicitudes::buscarPorLegajo@25-27@ReporteSolicitudes.java
+      11      3     95      1      11 ReporteSolicitudes::buscar@30-40@ReporteSolicitudes.java
+      19      4    233      0      19 ReporteSolicitudes::imprimirReporte@42-60@ReporteSolicitudes.java
+       9      3     37      1       9 ReporteSolicitudes::contarPorEstado@63-71@ReporteSolicitudes.java
+       3      2     20      1       3 ReporteSolicitudes::textoResponsable@74-76@ReporteSolicitudes.java
+       4      1     22      2       4 TipoSolicitud::TipoSolicitud@13-16@TipoSolicitud.java
+       3      1      8      0       3 TipoSolicitud::getArea@18-20@TipoSolicitud.java
+       3      1      8      0       3 TipoSolicitud::getDias@22-24@TipoSolicitud.java
+       8      3     39      1       8 TipoSolicitud::desdeTexto@27-34@TipoSolicitud.java
+       3      1     10      0       3 Responsable::puedeRecibirOtra@11-13@Responsable.java
+       3      1     11      0       3 Responsable::sumarCarga@15-17@Responsable.java
+       3      1     11      0       3 Responsable::restarCarga@19-21@Responsable.java
+       3      1     18      1       3 RepositorioCsv::RepositorioCsv@20-22@RepositorioCsv.java
+      18      4    117      0      18 RepositorioCsv::cargar@25-42@RepositorioCsv.java
+      10      3     71      1      10 RepositorioCsv::guardar@45-54@RepositorioCsv.java
+      14      1     99      1      14 RepositorioCsv::armarLinea@56-69@RepositorioCsv.java
+      27      4    253      2      27 RepositorioCsv::leerLinea@71-97@RepositorioCsv.java
+       3      1     24      1       3 RepositorioCsv::codificar@100-102@RepositorioCsv.java
+       3      1     24      1       3 RepositorioCsv::decodificar@104-106@RepositorioCsv.java
+      12      5     46      1      12 Estado::puedePasarA@7-18@Estado.java
+       8      3     39      1       8 Estado::desdeTexto@21-28@Estado.java
+      39     11    280      1      39 Main::main@7-45@Main.java
+      11      1     85      0      11 Main::mostrarMenu@47-57@Main.java
+      18      1    172      2      18 Main::registrar@60-77@Main.java
+       9      2     59      2       9 Main::cambiarEstado@79-87@Main.java
+       9      2     55      2       9 Main::asignarResponsable@89-97@Main.java
+      19      4    170      2      19 Main::buscar@99-117@Main.java
+       9      2     50      1       9 Main::leerId@120-128@Main.java
+       3      1     13      1       3 GestorSolicitudes::GestorSolicitudes@15-17@GestorSolicitudes.java
+       7      1     43      2       7 GestorSolicitudes::agregarResponsable@19-25@GestorSolicitudes.java
+      15      6     89      0      15 GestorSolicitudes::cargar@28-42@GestorSolicitudes.java
+       3      1     12      0       3 GestorSolicitudes::guardar@44-46@GestorSolicitudes.java
+       3      1     13      0       3 GestorSolicitudes::getSolicitudes@49-51@GestorSolicitudes.java
+       3      1     13      0       3 GestorSolicitudes::getResponsables@53-55@GestorSolicitudes.java
+      53     12    426      1      53 GestorSolicitudes::registrarSolicitud@58-110@GestorSolicitudes.java
+      17      4    109      2      17 GestorSolicitudes::cambiarEstado@112-128@GestorSolicitudes.java
+      32      7    222      2      32 GestorSolicitudes::asignarResponsable@130-161@GestorSolicitudes.java
+       8      3     53      1       8 GestorSolicitudes::buscarSolicitud@166-173@GestorSolicitudes.java
+       8      3     56      1       8 GestorSolicitudes::buscarResponsable@176-183@GestorSolicitudes.java
+       6      2     29      1       6 GestorSolicitudes::liberarCarga@186-191@GestorSolicitudes.java
+      16      6    115      2      16 GestorSolicitudes::transicionValida@194-209@GestorSolicitudes.java
+       4      1     34      0       4 Solicitud::calcularVencimiento@21-24@Solicitud.java
+       4      4     32      0       4 Solicitud::esUrgente@27-30@Solicitud.java
+12 file analyzed.
+==============================================================
+NLOC    Avg.NLOC  AvgCCN  Avg.token  function_cnt    file
+--------------------------------------------------------------
+     12       8.0     3.0       39.0         1     src/main/java/solicitudes/Prioridad.java
+     62       6.9     2.0       60.8         8     src/main/java/solicitudes/ReporteSolicitudes.java
+     27       4.5     1.5       19.2         4     src/main/java/solicitudes/TipoSolicitud.java
+     16       3.0     1.0       10.7         3     src/main/java/solicitudes/Responsable.java
+     94      11.1     2.1       86.6         7     src/main/java/solicitudes/RepositorioCsv.java
+     24      10.0     4.0       42.5         2     src/main/java/solicitudes/Estado.java
+      6       0.0     0.0        0.0         0     src/main/java/solicitudes/RepositorioSolicitudes.java
+      6       0.0     0.0        0.0         0     src/main/java/solicitudes/Estudiante.java
+      4       0.0     0.0        0.0         0     src/main/java/solicitudes/DatosSolicitud.java
+    118      16.3     3.3      124.4         7     src/main/java/solicitudes/Main.java
+    185      13.4     3.7       91.8        13     src/main/java/solicitudes/GestorSolicitudes.java
+     23       4.0     2.5       33.0         2     src/main/java/solicitudes/Solicitud.java
+
+===============================================================================================================
+No thresholds exceeded (cyclomatic_complexity > 15 or length > 1000 or nloc > 1000000 or parameter_count > 100)
+==========================================================================================
+Total nloc   Avg.NLOC  AvgCCN  Avg.token   Fun Cnt  Warning cnt   Fun Rt   nloc Rt
+------------------------------------------------------------------------------------------
+       577      10.3     2.7       73.5       47            0      0.00    0.00
