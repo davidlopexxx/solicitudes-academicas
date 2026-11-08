@@ -3,12 +3,13 @@ package solicitudes;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GestorSolicitudes {
 
     private final RepositorioSolicitudes repositorio;
-    private List<Solicitud> lista = new ArrayList<>();
+    private final List<Solicitud> lista = new ArrayList<>();
     private final List<Responsable> responsables = new ArrayList<>();
     private int contador = 0;
 
@@ -26,7 +27,8 @@ public class GestorSolicitudes {
 
     // lee las solicitudes guardadas y recalcula cuantas solicitudes activas tiene cada responsable
     public void cargar() {
-        lista = repositorio.cargar();
+        lista.clear();
+        lista.addAll(repositorio.cargar());
         for (Solicitud s : lista) {
             if (s.id > contador) {
                 contador = s.id;
@@ -42,6 +44,15 @@ public class GestorSolicitudes {
 
     private void guardar() {
         repositorio.guardar(lista);
+    }
+
+    // listas de solo lectura, para que el reporte las pueda recorrer sin modificarlas
+    public List<Solicitud> getSolicitudes() {
+        return Collections.unmodifiableList(lista);
+    }
+
+    public List<Responsable> getResponsables() {
+        return Collections.unmodifiableList(responsables);
     }
 
     // registra una solicitud nueva, devuelve el id o -1 si hubo un error
@@ -150,74 +161,6 @@ public class GestorSolicitudes {
         return true;
     }
 
-    public void buscarPorEstado(String estado) {
-        int n = 0;
-        for (int i = 0; i < lista.size(); i++) {
-            Solicitud s = lista.get(i);
-            if (s.estado.name().equals(estado)) {
-                System.out.println("#" + s.id + " | " + s.estudiante.nombre + " | " + s.tipo + " | " + s.prioridad
-                        + " | " + s.estado + " | " + (s.responsable == null ? "sin asignar" : s.responsable));
-                n++;
-            }
-        }
-        System.out.println("Total encontradas: " + n);
-    }
-
-    public void buscarPorTipo(String tipo) {
-        int n = 0;
-        for (int i = 0; i < lista.size(); i++) {
-            Solicitud s = lista.get(i);
-            if (s.tipo.name().equals(tipo)) {
-                System.out.println("#" + s.id + " | " + s.estudiante.nombre + " | " + s.tipo + " | " + s.prioridad
-                        + " | " + s.estado + " | " + (s.responsable == null ? "sin asignar" : s.responsable));
-                n++;
-            }
-        }
-        System.out.println("Total encontradas: " + n);
-    }
-
-    public void buscarPorLegajo(String legajo) {
-        int n = 0;
-        for (int i = 0; i < lista.size(); i++) {
-            Solicitud s = lista.get(i);
-            if (s.estudiante.legajo.equals(legajo)) {
-                System.out.println("#" + s.id + " | " + s.estudiante.nombre + " | " + s.tipo + " | " + s.prioridad
-                        + " | " + s.estado + " | " + (s.responsable == null ? "sin asignar" : s.responsable));
-                n++;
-            }
-        }
-        System.out.println("Total encontradas: " + n);
-    }
-
-    public void reporte() {
-        System.out.println("===== REPORTE DE SOLICITUDES =====");
-        int pendientes = contarPorEstado(Estado.PENDIENTE);
-        int enProceso = contarPorEstado(Estado.EN_PROCESO);
-        int resueltas = contarPorEstado(Estado.RESUELTA);
-        int cerradas = contarPorEstado(Estado.CERRADA);
-        System.out.println("Total: " + lista.size());
-        System.out.println("Pendientes: " + pendientes);
-        System.out.println("En proceso: " + enProceso);
-        System.out.println("Resueltas: " + resueltas);
-        System.out.println("Cerradas: " + cerradas);
-        System.out.println("--- Detalle ---");
-        for (int i = 0; i < lista.size(); i++) {
-            Solicitud s = lista.get(i);
-            String urg = "NO";
-            if (s.esUrgente()) {
-                urg = "SI";
-            }
-            System.out.println("#" + s.id + " | " + s.estudiante.nombre + " (" + s.estudiante.legajo + ") | " + s.tipo
-                    + " | " + s.prioridad + " | " + s.estado + " | " + (s.responsable == null ? "sin asignar" : s.responsable)
-                    + " | vence " + s.calcularVencimiento() + " | urgente: " + urg);
-        }
-        System.out.println("--- Carga de responsables ---");
-        for (int i = 0; i < responsables.size(); i++) {
-            Responsable rr = responsables.get(i);
-            System.out.println(rr.nombre + " (" + rr.area + "): " + rr.cargaActual + " solicitudes activas");
-        }
-    }
-
     // ---- metodos auxiliares (salen de los metodos largos de arriba) ----
 
     // busca una solicitud por su id, devuelve null si no existe
@@ -246,17 +189,6 @@ public class GestorSolicitudes {
         if (r != null) {
             r.restarCarga();
         }
-    }
-
-    // cuenta cuantas solicitudes hay en un estado
-    private int contarPorEstado(Estado estado) {
-        int cantidad = 0;
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).estado == estado) {
-                cantidad++;
-            }
-        }
-        return cantidad;
     }
 
     // controla si la solicitud puede pasar al nuevo estado; si no puede, imprime el motivo

@@ -16,6 +16,7 @@ public class Main {
             System.out.println("Error al leer los datos guardados: " + e.getMessage());
             return;
         }
+        ReporteSolicitudes reporte = new ReporteSolicitudes(gestor.getSolicitudes(), gestor.getResponsables());
         int op = -1;
         while (op != 0 && sc.hasNextLine()) {
             System.out.println();
@@ -83,18 +84,18 @@ public class Main {
                 String sub = sc.nextLine();
                 if (sub.equals("1")) {
                     System.out.print("Estado: ");
-                    gestor.buscarPorEstado(sc.nextLine().toUpperCase());
+                    reporte.buscarPorEstado(sc.nextLine().toUpperCase());
                 } else if (sub.equals("2")) {
                     System.out.print("Tipo: ");
-                    gestor.buscarPorTipo(sc.nextLine().toUpperCase());
+                    reporte.buscarPorTipo(sc.nextLine().toUpperCase());
                 } else if (sub.equals("3")) {
                     System.out.print("Legajo: ");
-                    gestor.buscarPorLegajo(sc.nextLine());
+                    reporte.buscarPorLegajo(sc.nextLine());
                 } else {
                     System.out.println("Opcion invalida");
                 }
             } else if (op == 5) {
-                gestor.reporte();
+                reporte.imprimirReporte();
             } else if (op != 0) {
                 System.out.println("Opcion invalida");
             }
