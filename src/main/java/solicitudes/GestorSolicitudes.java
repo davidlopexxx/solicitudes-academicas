@@ -124,10 +124,9 @@ public class GestorSolicitudes {
                     contador = s.id;
                 }
                 if (s.responsable != null && s.estado != Estado.CERRADA) {
-                    for (int i = 0; i < responsables.size(); i++) {
-                        if (responsables.get(i).nombre.equals(s.responsable)) {
-                            responsables.get(i).cargaActual = responsables.get(i).cargaActual + 1;
-                        }
+                    Responsable r = buscarResponsable(s.responsable);
+                    if (r != null) {
+                        r.sumarCarga();
                     }
                 }
                 linea = br.readLine();
@@ -174,7 +173,7 @@ public class GestorSolicitudes {
             System.out.println("Error: " + r.nombre + " es del area " + r.area + " y la solicitud es de " + s.area);
             return false;
         }
-        if (r.cargaActual >= 3) {
+        if (!r.puedeRecibirOtra()) {
             System.out.println("Error: " + r.nombre + " ya tiene 3 solicitudes activas");
             return false;
         }
@@ -182,7 +181,7 @@ public class GestorSolicitudes {
             liberarCarga(s.responsable);
         }
         s.responsable = r.nombre;
-        r.cargaActual = r.cargaActual + 1;
+        r.sumarCarga();
         guardar();
         System.out.println("Solicitud " + id + " asignada a " + r.nombre);
         return true;
@@ -227,20 +226,6 @@ public class GestorSolicitudes {
         System.out.println("Total encontradas: " + n);
     }
 
-    static String calcularVencimiento(Solicitud s) {
-        DateTimeFormatter f = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate d = LocalDate.parse(s.fechaCreacion, f);
-        return d.plusDays(s.tipo.getDias()).format(f);
-    }
-
-    static boolean esUrgente(Solicitud s) {
-        if ((s.prioridad == Prioridad.ALTA || s.tipo == TipoSolicitud.REINCORPORACION)
-                && s.estado != Estado.RESUELTA && s.estado != Estado.CERRADA) {
-            return true;
-        }
-        return false;
-    }
-
     public static void reporte() {
         System.out.println("===== REPORTE DE SOLICITUDES =====");
         int pendientes = contarPorEstado(Estado.PENDIENTE);
@@ -256,12 +241,12 @@ public class GestorSolicitudes {
         for (int i = 0; i < lista.size(); i++) {
             Solicitud s = lista.get(i);
             String urg = "NO";
-            if (esUrgente(s)) {
+            if (s.esUrgente()) {
                 urg = "SI";
             }
             System.out.println("#" + s.id + " | " + s.estudiante.nombre + " (" + s.estudiante.legajo + ") | " + s.tipo
                     + " | " + s.prioridad + " | " + s.estado + " | " + (s.responsable == null ? "sin asignar" : s.responsable)
-                    + " | vence " + calcularVencimiento(s) + " | urgente: " + urg);
+                    + " | vence " + s.calcularVencimiento() + " | urgente: " + urg);
         }
         System.out.println("--- Carga de responsables ---");
         for (int i = 0; i < responsables.size(); i++) {
@@ -298,10 +283,9 @@ public class GestorSolicitudes {
 
     // le baja en 1 la carga al responsable con ese nombre
     static void liberarCarga(String nombreResp) {
-        for (int i = 0; i < responsables.size(); i++) {
-            if (responsables.get(i).nombre.equals(nombreResp)) {
-                responsables.get(i).cargaActual = responsables.get(i).cargaActual - 1;
-            }
+        Responsable r = buscarResponsable(nombreResp);
+        if (r != null) {
+            r.restarCarga();
         }
     }
 
