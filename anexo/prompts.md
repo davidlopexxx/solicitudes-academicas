@@ -1,5 +1,3 @@
-# Prompts del grupo (texto literal)
-
 # Prompts del grupo (reconstrucción)
 
 Mensajes enviados por los integrantes (Lopez Angel y Lopez Leandro, desde una misma computadora) a la herramienta de IA (Claude, de Anthropic) durante el trabajo.
